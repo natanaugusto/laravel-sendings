@@ -15,7 +15,7 @@ class SpreadsheetsController extends Controller
     {
         return Inertia::render(
             'Spreadsheets/Index',
-            ['spreadsheets' => Spreadsheet::paginate()]
+            ['spreadsheets' => Spreadsheet::with(['user'])->paginate()]
         );
     }
 

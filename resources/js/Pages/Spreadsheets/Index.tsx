@@ -16,7 +16,7 @@ export default function Index({ auth }: PageProps) {
         </h2>
       }
     >
-      <Head title="Laravel 9 React JS Pagination Example with Vite - ItSolutionStuff.com" />
+      <Head title="Spreadsheets" />
 
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
