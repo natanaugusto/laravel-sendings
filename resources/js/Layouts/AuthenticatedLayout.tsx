@@ -35,10 +35,10 @@ export default function Authenticated({
                   Dashboard
                 </NavLink>
                 <NavLink
-                  href={route("dashboard")}
-                  active={route().current("dashboard")}
+                  href={route("spreadsheets.index")}
+                  active={route().current("spreadsheets.index")}
                 >
-                  Dashboard
+                  Spreadsheets
                 </NavLink>
               </div>
             </div>
