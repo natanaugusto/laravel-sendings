@@ -35,3 +35,11 @@ export type PageProps<
   };
   ziggy: Config & { location: string };
 };
+
+export type PagePropsTest<
+  T extends Record<string, unknown> = Record<string, unknown>
+> = T & {
+  auth: {
+    user: User;
+  };
+};

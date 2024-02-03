@@ -1,9 +1,14 @@
 import Pagination from "@/Components/Pagination";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
-import { PageProps, Pagination as PaginationType, Spreadsheet } from "@/types";
+import {
+  PageProps,
+  PagePropsTest,
+  Pagination as PaginationType,
+  Spreadsheet,
+} from "@/types";
 import { Head, usePage } from "@inertiajs/react";
 
-export default function Index({ auth }: PageProps) {
+export default function Index({ auth }: PageProps | PagePropsTest) {
   const spreadsheets = usePage().props.spreadsheets as PaginationType<
     Spreadsheet
   >;
