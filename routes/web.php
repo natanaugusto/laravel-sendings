@@ -35,7 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('spreadsheets', SpreadsheetsController::class);
+    Route::resource('spreadsheets', SpreadsheetsController::class)->only(['index', 'store', 'destroy']);
 });
 
 require __DIR__ . '/auth.php';
