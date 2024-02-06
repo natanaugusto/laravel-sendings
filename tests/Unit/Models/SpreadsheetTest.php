@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Contact;
 use App\Models\User;
 use App\Models\Spreadsheet;
 
@@ -34,4 +35,13 @@ it('must delete an existent spreadsheet', function () {
 it('must belongs to an user', function () {
     $spreadsheet = Spreadsheet::factory()->create();
     expect($spreadsheet->user)->toBeInstanceOf(User::class);
+});
+
+it('can have many contacts', function () {
+    $count = 10;
+    $spreadsheet = Spreadsheet::factory()->create();
+    Contact::factory($count)->create([
+        'spreadsheet_id' => $spreadsheet->id
+    ]);
+    expect($spreadsheet->contacts->count())->toBe($count);
 });
