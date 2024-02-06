@@ -35,6 +35,8 @@ it('must delete an existent contact', function () {
 });
 
 it('must belongs to a spreadsheet', function () {
-    $contact = Contact::factory()->create();
+    $contact = Contact::factory()->create([
+        'spreadsheet_id' => Spreadsheet::factory()->create()->id
+    ]);
     expect($contact->spreadsheet)->toBeInstanceOf(Spreadsheet::class);
 });

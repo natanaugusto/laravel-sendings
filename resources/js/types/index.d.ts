@@ -27,6 +27,10 @@ export interface Spreadsheet {
   fails: number;
 }
 
+export interface SpreadsheetFormData {
+  file: File | null;
+}
+
 export interface Contact {
   id: number;
   name: string;
@@ -34,6 +38,13 @@ export interface Contact {
   phone: string;
   document: string;
   spreadsheet: Spreadsheet;
+}
+
+export interface ContactFormData {
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  document: string | null;
 }
 
 export type PageProps<

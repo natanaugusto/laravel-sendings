@@ -4,14 +4,15 @@ import InputLabel from "@/Components/InputLabel";
 import Pagination from "@/Components/Pagination";
 import PrimaryButton from "@/Components/PrimaryButton";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
-import { PageProps, Pagination as PaginationType, Spreadsheet } from "@/types";
+import {
+  PageProps,
+  Pagination as PaginationType,
+  Spreadsheet,
+  SpreadsheetFormData,
+} from "@/types";
 import { Transition } from "@headlessui/react";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { FormEvent } from "react";
-
-interface SpreadsheetFormData {
-  file: File | null;
-}
 
 export default function Index({ auth }: PageProps) {
   const spreadsheets = usePage().props.spreadsheets as PaginationType<

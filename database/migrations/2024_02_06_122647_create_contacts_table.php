@@ -14,10 +14,10 @@ return new class extends Migration
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Spreadsheet::class);
+            $table->foreignIdFor(Spreadsheet::class)->nullable()->default(null);
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('phone')->nullable();
+            $table->string('phone', 50)->nullable();
             $table->string('document', 20)->unique()->nullable()->default(null);
             $table->timestamps();
         });

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Spreadsheet;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +17,7 @@ class ContactFactory extends Factory
     public function definition(): array
     {
         return [
-            'spreadsheet_id' => Spreadsheet::factory()->create()->id,
+            'spreadsheet_id' => null,
             'name' => fake()->name(),
             'email' => fake()->email(),
             'phone' => fake()->phoneNumber(),

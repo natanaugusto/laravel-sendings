@@ -1,10 +1,47 @@
+import { Transition } from "@headlessui/react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
+
+import Modal from "@/Components/Modal";
+import TextInput from "@/Components/TextInput";
+import InputError from "@/Components/InputError";
+import InputLabel from "@/Components/InputLabel";
 import Pagination from "@/Components/Pagination";
+import PrimaryButton from "@/Components/PrimaryButton";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
-import { Contact, PageProps, Pagination as PaginationType } from "@/types";
-import { Head, usePage } from "@inertiajs/react";
+import {
+  Contact,
+  ContactFormData,
+  PageProps,
+  Pagination as PaginationType,
+} from "@/types";
+import { FormEvent } from "react";
 
 export default function Index({ auth }: PageProps) {
   const contacts = usePage().props.contacts as PaginationType<Contact>;
+  const showForm = (usePage().props?.showModalForm as boolean) ?? false;
+  const {
+    data,
+    setData,
+    post,
+    reset,
+    errors,
+    processing,
+    recentlySuccessful,
+  } = useForm<ContactFormData>({
+    name: null,
+    email: null,
+    phone: null,
+    document: null,
+  });
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    post(route("contacts.store"));
+  };
+
+  const closeModal = () => {
+    router.visit(route("contacts.index"));
+  };
   return (
     <Authenticated
       user={auth.user}
@@ -17,6 +54,14 @@ export default function Index({ auth }: PageProps) {
       <Head title="Contacts" />
       <div className="sm:py-4 sm:p-4 lg:py-8 lg:p-8 ">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+          <div className="mx-auto sm:py-3 lg:py-4">
+            <PrimaryButton
+              onClick={() => router.visit(route("contacts.create"))}
+              className="bg-green-500 hover:bg-green-700 focus:bg-green-700 active:bg-green-900"
+            >
+              Create
+            </PrimaryButton>
+          </div>
           <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div className="p-6 bg-white border-b border-gray-200">
               <table className="table-fixed w-full">
@@ -39,7 +84,9 @@ export default function Index({ auth }: PageProps) {
                         <td className="border px-4 py-2">{email}</td>
                         <td className="border px-4 py-2">{phone}</td>
                         <td className="border px-4 py-2">{document}</td>
-                        <td className="border px-4 py-2">{spreadsheet.path}</td>
+                        <td className="border px-4 py-2">
+                          {spreadsheet?.path ?? "-"}
+                        </td>
                       </tr>
                     )
                   )}
@@ -50,6 +97,65 @@ export default function Index({ auth }: PageProps) {
           </div>
         </div>
       </div>
+      <Modal show={showForm} onClose={closeModal}>
+        <form onSubmit={submit} className="m-6 p-4">
+          <div className="flex items-center">
+            <InputLabel htmlFor="name" value="Name" />
+            <TextInput
+              id="name"
+              name="name"
+              className="m-2 block w-full"
+              onChange={(e) => setData("name", e.target.value)}
+              required
+            />
+            <InputError className="mt-2" message={errors.name} />
+          </div>
+          <div className="flex items-center">
+            <InputLabel htmlFor="email" value="Email" />
+            <TextInput
+              id="email"
+              name="email"
+              className="m-2 block w-full"
+              onChange={(e) => setData("email", e.target.value)}
+              required
+            />
+            <InputError className="mt-2" message={errors.email} />
+          </div>
+          <div className="flex items-center">
+            <InputLabel htmlFor="phone" value="Phone" />
+            <TextInput
+              id="phone"
+              name="phone"
+              className="m-2 block w-full"
+              onChange={(e) => setData("phone", e.target.value)}
+            />
+            <InputError className="mt-2" message={errors.phone} />
+          </div>
+          <div className="flex items-center">
+            <InputLabel htmlFor="document" value="Document" />
+            <TextInput
+              id="document"
+              name="document"
+              className="m-2 block w-full"
+              onChange={(e) => setData("document", e.target.value)}
+            />
+            <InputError className="mt-2" message={errors.document} />
+          </div>
+          <div className="mt-4 flex items-center">
+            <PrimaryButton disabled={processing}>Create</PrimaryButton>
+
+            <Transition
+              show={recentlySuccessful}
+              enter="transition ease-in-out"
+              enterFrom="opacity-0"
+              leave="transition ease-in-out"
+              leaveTo="opacity-0"
+            >
+              <p className="text-sm text-gray-600">Saved.</p>
+            </Transition>
+          </div>
+        </form>
+      </Modal>
     </Authenticated>
   );
 }
