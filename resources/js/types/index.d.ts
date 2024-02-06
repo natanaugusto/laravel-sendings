@@ -27,6 +27,15 @@ export interface Spreadsheet {
   fails: number;
 }
 
+export interface Contact {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  document: string;
+  spreadsheet: Spreadsheet;
+}
+
 export type PageProps<
   T extends Record<string, unknown> = Record<string, unknown>
 > = T & {

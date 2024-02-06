@@ -5,14 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Contact;
 use Illuminate\Http\Request;
 
-class ContactController extends Controller
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
+
+class ContactsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): InertiaResponse
     {
-        //
+        return Inertia::render('Contacts', [
+            'contacts' => Contact::with(['spreadsheet'])->paginate()
+        ]);
     }
 
     /**

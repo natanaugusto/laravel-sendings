@@ -14,7 +14,7 @@ it('has index page to list spreadsheets', function () {
     $response->assertStatus(HttpResponse::HTTP_OK);
     $response->assertInertia(
         fn (AssertableInertia $page) => $page
-            ->component('Spreadsheets/Index')
+            ->component('Spreadsheets')
             ->has('spreadsheets')
             ->where('spreadsheets', Spreadsheet::paginate()->toArray())
     );
@@ -32,7 +32,7 @@ it('must upload a spreadsheet', function () {
                 ->createWithContent($fileName, file_get_contents($exampleFile))
         ]);
     $response->assertInertia(
-        fn (AssertableInertia $page) => $page->component('Spreadsheets/Index')
+        fn (AssertableInertia $page) => $page->component('Spreadsheets')
     );
     $uploadFileName = now()->format('YmdHi') . "_{$fileName}";
     $where = [

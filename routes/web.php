@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SpreadsheetsController;
 use Illuminate\Foundation\Application;
@@ -36,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('spreadsheets', SpreadsheetsController::class)->only(['index', 'store', 'destroy']);
+    Route::resource('contacts', ContactsController::class);
 });
 
 require __DIR__ . '/auth.php';

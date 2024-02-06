@@ -20,7 +20,7 @@ class SpreadsheetsController extends Controller
     public function index(): InertiaResponse
     {
         return Inertia::render(
-            'Spreadsheets/Index',
+            'Spreadsheets',
             ['spreadsheets' => Spreadsheet::with(['user'])->paginate()]
         );
     }
@@ -52,7 +52,7 @@ class SpreadsheetsController extends Controller
             'path' => $file,
         ]);
         return Inertia::render(
-            'Spreadsheets/Index',
+            'Spreadsheets',
             ['spreadsheets' => Spreadsheet::with(['user'])->paginate()]
         );
     }
