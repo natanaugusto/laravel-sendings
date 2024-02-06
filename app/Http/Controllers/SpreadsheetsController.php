@@ -6,7 +6,10 @@ use App\Models\Spreadsheet;
 
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Response as InertiaResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class SpreadsheetsController extends Controller
@@ -14,7 +17,7 @@ class SpreadsheetsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): InertiaResponse
     {
         return Inertia::render(
             'Spreadsheets/Index',
@@ -25,28 +28,33 @@ class SpreadsheetsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): InertiaResponse | RedirectResponse
     {
         $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:xlsx'
+            'file' => 'required|file|mimes:xlsx'
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), HttpResponse::HTTP_UNPROCESSABLE_ENTITY);
+            return Redirect::back()->withErrors($validator->errors())->withInput();
         }
         $file = $request->file('file')
             ->storeAs(
                 '',
-                now()->format('YmdHi') . "_{$request->file('file')->getClientOriginalName()}"
+                now()->format('YmdHi') . "_{$request->file('file')->getClientOriginalName()}",
+                'local'
             );
         if ($file === false) {
-            return response(
-                [
-                    "message" => "The file was not imported"
-                ],
-                HttpResponse::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return Inertia::render('ErrorPage', [
+                'message' => "The file was not imported",
+            ])->toResponse($request)->setStatusCode(HttpResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return response(null, HttpResponse::HTTP_CREATED);
+        Spreadsheet::create([
+            'user_id' => $request->user()->id,
+            'path' => $file,
+        ]);
+        return Inertia::render(
+            'Spreadsheets/Index',
+            ['spreadsheets' => Spreadsheet::with(['user'])->paginate()]
+        );
     }
 
     /**

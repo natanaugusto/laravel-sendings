@@ -3,11 +3,15 @@ import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import Pagination from "@/Components/Pagination";
 import PrimaryButton from "@/Components/PrimaryButton";
-import TextInput from "@/Components/TextInput";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 import { PageProps, Pagination as PaginationType, Spreadsheet } from "@/types";
 import { Transition } from "@headlessui/react";
 import { Head, useForm, usePage } from "@inertiajs/react";
+import { FormEvent } from "react";
+
+interface SpreadsheetFormData {
+  file: File | null;
+}
 
 export default function Index({ auth }: PageProps) {
   const spreadsheets = usePage().props.spreadsheets as PaginationType<
@@ -16,12 +20,17 @@ export default function Index({ auth }: PageProps) {
   const {
     data,
     setData,
-    patch,
+    post,
     errors,
     processing,
     recentlySuccessful,
-  } = useForm({ file: null });
-  const submit = () => {};
+  } = useForm<SpreadsheetFormData>({
+    file: null,
+  });
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    post(route("spreadsheets.store"));
+  };
   return (
     <Authenticated
       user={auth.user}
@@ -47,12 +56,13 @@ export default function Index({ auth }: PageProps) {
               </header>
 
               <form onSubmit={submit} className="mt-6 space-y-6">
-                <div>
+                <div className="flex items-center gap-4">
                   <InputLabel htmlFor="file" value="File" />
                   <FileInput
                     id="file"
+                    name="file"
                     className="mt-1 block w-full"
-                    onChange={submit}
+                    onChange={(e) => setData("file", e.target.files?.[0]!)}
                     required
                   />
 
@@ -95,7 +105,7 @@ export default function Index({ auth }: PageProps) {
                 <tbody>
                   {spreadsheets.data.map(
                     ({ id, user, path, rows, imported, fails }) => (
-                      <tr>
+                      <tr key={id}>
                         <td className="border px-4 py-2">{id}</td>
                         <td className="border px-4 py-2">{user.name}</td>
                         <td className="border px-4 py-2">{path}</td>

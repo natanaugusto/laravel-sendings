@@ -16,11 +16,18 @@ export default function Pagination({ links }: { links: LinkType[] }) {
         <div className="flex flex-wrap mt-8">
           {links.map((link, key) =>
             link.url === null ? (
-              <div className="mr-1 mb-1 px-4 py-3 text-sm leading-4 text-gray-400 border rounded">
+              <div
+                key={`label-${key}`}
+                className="mr-1 mb-1 px-4 py-3 text-sm leading-4 text-gray-400 border rounded"
+              >
                 {link.label}
               </div>
             ) : (
-              <Link className={getClassName(link.active)} href={link.url}>
+              <Link
+                key={`link-${key}`}
+                className={getClassName(link.active)}
+                href={link.url}
+              >
                 {link.label}
               </Link>
             )

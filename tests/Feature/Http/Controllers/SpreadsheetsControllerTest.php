@@ -11,8 +11,7 @@ it('has index page to list spreadsheets', function () {
     $response = $this
         ->actingAs(User::factory()->create())
         ->get(route('spreadsheets.index'));
-    $response->assertStatus(200);
-    $response->assertInertia();
+    $response->assertStatus(HttpResponse::HTTP_OK);
     $response->assertInertia(
         fn (AssertableInertia $page) => $page
             ->component('Spreadsheets/Index')
@@ -22,16 +21,26 @@ it('has index page to list spreadsheets', function () {
 });
 
 it('must upload a spreadsheet', function () {
+    $user = User::factory()->create();
     $fileName = 'example.xlsx';
     $exampleFile = storage_path("app/{$fileName}");
     Storage::fake('local');
     $response = $this
-        ->actingAs(User::factory()->create())
-        ->postJson(route('spreadsheets.store'), [
+        ->actingAs($user)
+        ->post(route('spreadsheets.store'), [
             'file' => UploadedFile::fake()
                 ->createWithContent($fileName, file_get_contents($exampleFile))
         ]);
-    $response->assertStatus(HttpResponse::HTTP_CREATED);
+    $response->assertInertia(
+        fn (AssertableInertia $page) => $page->component('Spreadsheets/Index')
+    );
     $uploadFileName = now()->format('YmdHi') . "_{$fileName}";
+    $where = [
+        'user_id' => $user->id,
+        'path' => $uploadFileName
+    ];
+    $this->assertDatabaseHas(Spreadsheet::class, $where);
+    $spreadsheet = Spreadsheet::where($where)->first();
+    expect($spreadsheet->rows)->toBeGreaterThan(0);
     Storage::assertExists($uploadFileName);
 });
