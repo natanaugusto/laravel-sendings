@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Spreadsheet;
 use App\Models\User;
+use App\Models\Spreadsheet;
 
 it('must create a spreadsheet', function () {
     $data = [
@@ -29,4 +29,9 @@ it('must delete an existent spreadsheet', function () {
     $spreadsheet = Spreadsheet::factory()->create();
     $spreadsheet->delete();
     $this->assertDatabaseMissing(Spreadsheet::class, ['id' => $spreadsheet->id]);
+});
+
+it('must belongs to an user', function () {
+    $spreadsheet = Spreadsheet::factory()->create();
+    expect($spreadsheet->user)->toBeInstanceOf(User::class);
 });
