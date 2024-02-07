@@ -6,6 +6,7 @@ use App\Enums\IncreaseType;
 use App\Models\Contact;
 use App\Models\Spreadsheet;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Throwable;
@@ -24,7 +25,7 @@ class ContactsImport implements ToModel, ShouldQueue, WithChunkReading
     public function model(array $row)
     {
         try {
-            $contact = Contact::create([
+            Contact::create([
                 'spreadsheet_id' => $this->spreadsheet->id,
                 'name' => $row[0],
                 'email' => $row[1],
@@ -32,8 +33,8 @@ class ContactsImport implements ToModel, ShouldQueue, WithChunkReading
                 'document' => empty($row[3]) ? null : (string)$row[3],
             ]);
             $this->spreadsheet->increase();
-            return $contact;
         } catch (Throwable  $e) {
+            Log::error($e);
             $this->spreadsheet->increase(IncreaseType::FAILS);
         }
     }

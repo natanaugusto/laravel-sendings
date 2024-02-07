@@ -2,7 +2,7 @@
 
 use App\Models\User;
 use App\Models\Contact;
-
+use Illuminate\Support\Arr;
 use Inertia\Testing\AssertableInertia;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
@@ -66,20 +66,19 @@ it('must to have an edit page for contact', function () {
 it('must to update a contact', function () {
     $contact = Contact::factory()->create();
     $contact->name = 'João Doe';
+    $data = Arr::only($contact->toArray(), [
+        'name',
+        'email',
+    ]);
     $response = $this
         ->actingAs(User::factory()->create())
         ->put(
             route('contacts.update', ['contact' => $contact->id]),
-            $contact->only([
-                'name',
-                'email',
-                'phone',
-                'document'
-            ])
+            $data
         );
     $response->assertStatus(HttpResponse::HTTP_FOUND);
     $response->assertRedirect(route('contacts.index'));
-    $this->assertDatabaseHas(Contact::class, $contact->only(['name', 'email']));
+    $this->assertDatabaseHas(Contact::class, $data);
 });
 
 it('must delete a contact', function () {

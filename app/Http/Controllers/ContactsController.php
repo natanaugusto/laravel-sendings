@@ -58,7 +58,7 @@ class ContactsController extends Controller
      */
     public function update(ContactStoreRequest $request, Contact $contact): RedirectResponse
     {
-        $contact->fill($request->validate($request->all()));
+        $contact->fill($request->all());
         $contact->saveOrFail();
         return Redirect::route('contacts.index');
     }
