@@ -1,0 +1,38 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Pest: Current File",
+            "type": "php",
+            "request": "launch",
+            "program": "${workspaceFolder}/vendor/pestphp/pest/bin/pest",
+            "args": ["${file}"],
+            "cwd": "${workspaceFolder}",
+            "externalConsole": false,
+            "stopOnEntry": false,
+            "env": {
+                "DB_CONNECTION": "sqlite",
+                "DB_DATABASE": ":memory:",
+                "APP_ENV": "testing"
+            }
+        },
+        {
+            "name": "Pest: Selected Text",
+            "type": "php",
+            "request": "launch",
+            "program": "${workspaceFolder}/vendor/pestphp/pest/bin/pest",
+            "args": ["${file}", "--filter", "${selectedText}"],
+            "cwd": "${workspaceFolder}",
+            "externalConsole": false,
+            "stopOnEntry": false,
+            "env": {
+                "DB_CONNECTION": "sqlite",
+                "DB_DATABASE": ":memory:",
+                "APP_ENV": "testing"
+            }
+        }
+    ]
+}
