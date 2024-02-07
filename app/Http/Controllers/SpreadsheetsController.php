@@ -50,12 +50,11 @@ class SpreadsheetsController extends Controller
                 'message' => "The file was not imported",
             ])->toResponse($request)->setStatusCode(HttpResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
-        Excel::import(new ContactsImport(
-            Spreadsheet::create([
-                'user_id' => $request->user()->id,
-                'path' => $file,
-            ])
-        ), $file);
+        $spreadsheet = Spreadsheet::create([
+            'user_id' => $request->user()->id,
+            'path' => $file,
+        ]);
+        Excel::queueImport(new ContactsImport($spreadsheet), $file);
         return Inertia::render(
             'Spreadsheets',
             ['spreadsheets' => Spreadsheet::with(['user'])->paginate()]

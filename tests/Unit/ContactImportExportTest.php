@@ -29,3 +29,18 @@ it('must import a contact spreadsheet', function () {
     $this->assertDatabaseCount(Contact::class, $count + $beforeImport);
     unlink(storage_path("app/{$file}"));
 });
+
+it('must import a contact spreadsheet using queue', function () {
+    $count = 10;
+    $file = 'export_example.xlsx';
+    $contacts = Contact::factory($count)->make();
+    $export = new ContactsExport($contacts);
+    Excel::store($export, $file);
+    Excel::fake();
+    $import = new ContactsImport(Spreadsheet::factory()->create([
+        'path' => $file
+    ]));
+    Excel::queueImport($import, $file);
+    Excel::assertQueued($file);
+    unlink(storage_path("app/{$file}"));
+});

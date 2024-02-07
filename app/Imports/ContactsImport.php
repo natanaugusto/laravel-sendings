@@ -5,10 +5,12 @@ namespace App\Imports;
 use App\Enums\IncreaseType;
 use App\Models\Contact;
 use App\Models\Spreadsheet;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Throwable;
 
-class ContactsImport implements ToModel
+class ContactsImport implements ToModel, ShouldQueue, WithChunkReading
 {
     public function __construct(protected Spreadsheet $spreadsheet)
     {
@@ -34,5 +36,10 @@ class ContactsImport implements ToModel
         } catch (Throwable  $e) {
             $this->spreadsheet->increase(IncreaseType::FAILS);
         }
+    }
+
+    public function chunkSize(): int
+    {
+        return config('excel.exports.chunk_size');
     }
 }

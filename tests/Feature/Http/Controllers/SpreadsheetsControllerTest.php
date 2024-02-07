@@ -6,6 +6,7 @@ use App\Models\Spreadsheet;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia;
+use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 it('has index page to list spreadsheets', function () {
@@ -25,8 +26,8 @@ it('must upload a spreadsheet', function () {
     $user = User::factory()->create();
     $fileName = 'example.xlsx';
     $exampleFile = storage_path("app/{$fileName}");
-    $countContactsBeforeImport = Contact::count();
     Storage::fake('local');
+    Excel::fake();
     $response = $this
         ->actingAs($user)
         ->post(route('spreadsheets.store'), [
@@ -42,9 +43,6 @@ it('must upload a spreadsheet', function () {
         'path' => $uploadFileName
     ];
     $this->assertDatabaseHas(Spreadsheet::class, $where);
-    $spreadsheet = Spreadsheet::where($where)->first();
-    expect($spreadsheet->rows)->toBeGreaterThan(0);
-    expect($spreadsheet->imported)->toBeGreaterThan(0);
-    expect(Contact::count())->toBeGreaterThan($countContactsBeforeImport);
+    Excel::assertQueued($uploadFileName);
     Storage::assertExists($uploadFileName);
 });
