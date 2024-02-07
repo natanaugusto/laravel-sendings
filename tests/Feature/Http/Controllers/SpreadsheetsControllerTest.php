@@ -51,3 +51,10 @@ it('must upload a spreadsheet', function () {
     Storage::assertExists($uploadFileName);
     unlink(storage_path("app/{$file}"));
 });
+
+it('must fails if the file was not sended', function () {
+    $response = $this
+        ->actingAs(User::factory()->create())
+        ->post(route('spreadsheets.store'), ['file' => null]);
+    $response->assertRedirect()->withErrors(['file']);
+});
