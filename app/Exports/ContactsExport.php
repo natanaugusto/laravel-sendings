@@ -4,10 +4,13 @@ namespace App\Exports;
 
 use App\Models\Contact;
 use Illuminate\Database\Eloquent\Collection;
+use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
 class ContactsExport implements FromCollection
 {
+    use Exportable;
+
     public function __construct(protected Collection $contacts)
     {
     }
