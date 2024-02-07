@@ -1,5 +1,6 @@
 <?php
 
+use App\Exports\ContactsExport;
 use App\Models\Contact;
 use App\Models\User;
 use App\Models\Spreadsheet;
@@ -24,20 +25,23 @@ it('has index page to list spreadsheets', function () {
 
 it('must upload a spreadsheet', function () {
     $user = User::factory()->create();
-    $fileName = 'example.xlsx';
-    $exampleFile = storage_path("app/{$fileName}");
+    $file = 'example.xlsx';
+    $contacts = Contact::factory(10)->make();
+    $export = new ContactsExport($contacts);
+    Excel::store($export, $file);
+    $exampleFile = storage_path("app/{$file}");
     Storage::fake('local');
     Excel::fake();
     $response = $this
         ->actingAs($user)
         ->post(route('spreadsheets.store'), [
             'file' => UploadedFile::fake()
-                ->createWithContent($fileName, file_get_contents($exampleFile))
+                ->createWithContent($file, file_get_contents($exampleFile))
         ]);
     $response->assertInertia(
         fn (AssertableInertia $page) => $page->component('Spreadsheets')
     );
-    $uploadFileName = now()->format('YmdHi') . "_{$fileName}";
+    $uploadFileName = now()->format('YmdHi') . "_{$file}";
     $where = [
         'user_id' => $user->id,
         'path' => $uploadFileName
@@ -45,4 +49,5 @@ it('must upload a spreadsheet', function () {
     $this->assertDatabaseHas(Spreadsheet::class, $where);
     Excel::assertQueued($uploadFileName);
     Storage::assertExists($uploadFileName);
+    unlink(storage_path("app/{$file}"));
 });
