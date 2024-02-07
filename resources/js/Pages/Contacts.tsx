@@ -15,28 +15,36 @@ import {
   Pagination as PaginationType,
 } from "@/types";
 import { FormEvent } from "react";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 
 export default function Index({ auth }: PageProps) {
   const contacts = usePage().props.contacts as PaginationType<Contact>;
   const showForm = (usePage().props?.showModalForm as boolean) ?? false;
+  const contact = (usePage().props?.contact as Contact) ?? null;
   const {
     data,
     setData,
     post,
-    reset,
+    put,
+    delete: postDelete,
     errors,
     processing,
     recentlySuccessful,
-  } = useForm<ContactFormData>({
-    name: null,
-    email: null,
-    phone: null,
-    document: null,
-  });
+  } = useForm<ContactFormData>(
+    contact ?? {
+      id: null,
+      name: null,
+      email: null,
+      phone: null,
+      document: null,
+    }
+  );
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    post(route("contacts.store"));
+    data.id
+      ? put(route("contacts.update", { id: data.id }))
+      : post(route("contacts.store"));
   };
 
   const closeModal = () => {
@@ -73,6 +81,7 @@ export default function Index({ auth }: PageProps) {
                     <th className="px-4 py-2">Phone</th>
                     <th className="px-4 py-2">Document</th>
                     <th className="px-4 py-2">Spreadsheet</th>
+                    <th className="px-4 py-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -87,6 +96,24 @@ export default function Index({ auth }: PageProps) {
                         <td className="border px-4 py-2">
                           {spreadsheet?.path ?? "-"}
                         </td>
+                        <td className="border px-4 py-2 items-center space-x-2">
+                          <PrimaryButton
+                            onClick={() =>
+                              router.visit(route("contacts.edit", { id }))
+                            }
+                            className="bg-blue-500 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900"
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </PrimaryButton>
+                          <PrimaryButton
+                            onClick={() =>
+                              postDelete(route("contacts.destroy", { id }))
+                            }
+                            className="bg-red-500 hover:bg-red-700 focus:bg-red-700 active:bg-red-900"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </PrimaryButton>
+                        </td>
                       </tr>
                     )
                   )}
@@ -97,6 +124,7 @@ export default function Index({ auth }: PageProps) {
           </div>
         </div>
       </div>
+
       <Modal show={showForm} onClose={closeModal}>
         <form onSubmit={submit} className="m-6 p-4">
           <div className="flex items-center">
@@ -104,6 +132,7 @@ export default function Index({ auth }: PageProps) {
             <TextInput
               id="name"
               name="name"
+              value={data.name ?? ""}
               className="m-2 block w-full"
               onChange={(e) => setData("name", e.target.value)}
               required
@@ -115,6 +144,7 @@ export default function Index({ auth }: PageProps) {
             <TextInput
               id="email"
               name="email"
+              value={data.email ?? ""}
               className="m-2 block w-full"
               onChange={(e) => setData("email", e.target.value)}
               required
@@ -126,6 +156,7 @@ export default function Index({ auth }: PageProps) {
             <TextInput
               id="phone"
               name="phone"
+              value={data.phone ?? ""}
               className="m-2 block w-full"
               onChange={(e) => setData("phone", e.target.value)}
             />
@@ -136,13 +167,16 @@ export default function Index({ auth }: PageProps) {
             <TextInput
               id="document"
               name="document"
+              value={data.document ?? ""}
               className="m-2 block w-full"
               onChange={(e) => setData("document", e.target.value)}
             />
             <InputError className="mt-2" message={errors.document} />
           </div>
           <div className="mt-4 flex items-center">
-            <PrimaryButton disabled={processing}>Create</PrimaryButton>
+            <PrimaryButton disabled={processing}>
+              {data.id ? "Update" : "Create"}
+            </PrimaryButton>
 
             <Transition
               show={recentlySuccessful}

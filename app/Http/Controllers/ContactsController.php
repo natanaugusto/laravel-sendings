@@ -24,7 +24,7 @@ class ContactsController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): InertiaResponse
     {
         return Inertia::render('Contacts', [
             'contacts' => Contact::with(['spreadsheet'])->paginate(),
@@ -44,38 +44,45 @@ class ContactsController extends Controller
             'phone' => 'nullable|max:50',
             'document' => 'nullable|max:20',
         ]));
-        return Redirect::route('contacts.index', []);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Contact $contact)
-    {
-        //
+        return Redirect::route('contacts.index');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Contact $contact)
+    public function edit(Contact $contact): InertiaResponse
     {
-        //
+        return Inertia::render('Contacts', [
+            'contacts' => Contact::with(['spreadsheet'])->paginate(),
+            'showModalForm' => true,
+            'contact' => $contact
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Contact $contact)
+    public function update(Request $request, Contact $contact): RedirectResponse
     {
-        //
+        $contact->fill(
+            $request->validate([
+                'spreadsheet_id' => 'nullable',
+                'name' => 'required|max:255',
+                'email' => 'required|email|max:255',
+                'phone' => 'nullable|max:50',
+                'document' => 'nullable|max:20',
+            ])
+        );
+        $contact->saveOrFail();
+        return Redirect::route('contacts.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Contact $contact)
+    public function destroy(Contact $contact): RedirectResponse
     {
-        //
+        $contact->deleteOrFail();
+        return Redirect::route('contacts.index');
     }
 }

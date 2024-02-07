@@ -41,6 +41,7 @@ export interface Contact {
 }
 
 export interface ContactFormData {
+  id: number | null;
   name: string | null;
   email: string | null;
   phone: string | null;
