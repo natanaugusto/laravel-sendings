@@ -91,3 +91,26 @@ it('must delete a contact', function () {
     $response->assertRedirect(route('contacts.index'));
     $this->assertDatabaseMissing(Contact::class, ['id' => $contact->id]);
 });
+
+it('must fails on validate the contact store and update validations', function () {
+    $response = $this
+        ->actingAs(User::factory()->create())
+        ->post(route('contacts.store'), [
+            'name' => null,
+            'email' => null,
+        ]);
+    $response->assertRedirect()->withErrors(['file', 'name', 'email']);
+    $response = $this
+        ->actingAs(User::factory()->create())
+        ->put(
+            route(
+                'contacts.update',
+                ['contact' => Contact::factory()->create()->id]
+            ),
+            [
+                'name' => null,
+                'email' => null,
+            ]
+        );
+    $response->assertRedirect()->withErrors(['file', 'name', 'email']);
+});

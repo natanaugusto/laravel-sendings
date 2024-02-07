@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contact;
-use Illuminate\Http\Request;
+use App\Http\Requests\ContactStoreRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -35,15 +35,9 @@ class ContactsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(ContactStoreRequest $request): RedirectResponse
     {
-        Contact::create($request->validate([
-            'spreadsheet_id' => 'nullable',
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|max:50',
-            'document' => 'nullable|max:20',
-        ]));
+        Contact::create($request->all());
         return Redirect::route('contacts.index');
     }
 
@@ -62,17 +56,9 @@ class ContactsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Contact $contact): RedirectResponse
+    public function update(ContactStoreRequest $request, Contact $contact): RedirectResponse
     {
-        $contact->fill(
-            $request->validate([
-                'spreadsheet_id' => 'nullable',
-                'name' => 'required|max:255',
-                'email' => 'required|email|max:255',
-                'phone' => 'nullable|max:50',
-                'document' => 'nullable|max:20',
-            ])
-        );
+        $contact->fill($request->validate($request->all()));
         $contact->saveOrFail();
         return Redirect::route('contacts.index');
     }
