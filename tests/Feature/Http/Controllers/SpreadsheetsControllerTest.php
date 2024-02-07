@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Contact;
 use App\Models\User;
 use App\Models\Spreadsheet;
 use Illuminate\Http\UploadedFile;
@@ -24,6 +25,7 @@ it('must upload a spreadsheet', function () {
     $user = User::factory()->create();
     $fileName = 'example.xlsx';
     $exampleFile = storage_path("app/{$fileName}");
+    $countContactsBeforeImport = Contact::count();
     Storage::fake('local');
     $response = $this
         ->actingAs($user)
@@ -42,5 +44,7 @@ it('must upload a spreadsheet', function () {
     $this->assertDatabaseHas(Spreadsheet::class, $where);
     $spreadsheet = Spreadsheet::where($where)->first();
     expect($spreadsheet->rows)->toBeGreaterThan(0);
+    expect($spreadsheet->imported)->toBeGreaterThan(0);
+    expect(Contact::count())->toBeGreaterThan($countContactsBeforeImport);
     Storage::assertExists($uploadFileName);
 });

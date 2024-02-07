@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ContactsImport;
 use App\Models\Spreadsheet;
 
 use Inertia\Inertia;
@@ -9,8 +10,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Response as InertiaResponse;
+use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
+use Throwable;
 
 class SpreadsheetsController extends Controller
 {
@@ -47,10 +50,12 @@ class SpreadsheetsController extends Controller
                 'message' => "The file was not imported",
             ])->toResponse($request)->setStatusCode(HttpResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
-        Spreadsheet::create([
-            'user_id' => $request->user()->id,
-            'path' => $file,
-        ]);
+        Excel::import(new ContactsImport(
+            Spreadsheet::create([
+                'user_id' => $request->user()->id,
+                'path' => $file,
+            ])
+        ), $file);
         return Inertia::render(
             'Spreadsheets',
             ['spreadsheets' => Spreadsheet::with(['user'])->paginate()]

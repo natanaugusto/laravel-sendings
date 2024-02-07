@@ -2,9 +2,11 @@
 
 namespace App\Imports;
 
+use App\Enums\IncreaseType;
 use App\Models\Contact;
 use App\Models\Spreadsheet;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Throwable;
 
 class ContactsImport implements ToModel
 {
@@ -19,12 +21,18 @@ class ContactsImport implements ToModel
      */
     public function model(array $row)
     {
-        return new Contact([
-            'spreadsheet_id' => $this->spreadsheet->id,
-            'name' => $row[1],
-            'email' => $row[2],
-            'phone' => $row[3],
-            'document' => $row[4],
-        ]);
+        try {
+            $contact = Contact::create([
+                'spreadsheet_id' => $this->spreadsheet->id,
+                'name' => $row[0],
+                'email' => $row[1],
+                'phone' => empty($row[2]) ? null : (string)$row[2],
+                'document' => empty($row[3]) ? null : (string)$row[3],
+            ]);
+            $this->spreadsheet->increase();
+            return $contact;
+        } catch (Throwable  $e) {
+            $this->spreadsheet->increase(IncreaseType::FAILS);
+        }
     }
 }

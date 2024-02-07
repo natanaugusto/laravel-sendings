@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\IncreaseType;
 use App\Models\Contact;
 use App\Models\User;
 use App\Models\Spreadsheet;
@@ -44,4 +45,14 @@ it('can have many contacts', function () {
         'spreadsheet_id' => $spreadsheet->id
     ]);
     expect($spreadsheet->contacts->count())->toBe($count);
+});
+
+it('must have methods to increase fails and imported values', function () {
+    $sheet = Spreadsheet::factory()->create();
+    $sheet->increase();
+    expect($sheet->imported)->toBe(1);
+    $sheet->increase(IncreaseType::FAILS);
+    expect($sheet->fails)->toBe(1);
+    $sheet->increase(count: 2);
+    expect($sheet->imported)->toBe(3);
 });

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\IncreaseType;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,6 +24,16 @@ class Spreadsheet extends Model
     public function contacts(): HasMany
     {
         return $this->hasMany(Contact::class);
+    }
+
+    public function increase(IncreaseType $type = IncreaseType::IMPORTED, int $count = 1): void
+    {
+        if ($this->isDirty()) {
+            $this->save();
+        }
+        $this->refresh();
+        $this->attributes[$type->value] = $this->attributes[$type->value] + $count;
+        $this->save();
     }
 
     protected static function boot(): void
