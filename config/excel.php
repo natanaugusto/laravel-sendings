@@ -306,10 +306,10 @@ return [
     |
     */
     'transactions' => [
-        'handler' => 'db',
-        'db'      => [
-            'connection' => null,
-        ],
+        'handler' => 'null',
+        // 'db'      => [
+        //     'connection' => null,
+        // ],
     ],
 
     'temporary_files' => [

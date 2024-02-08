@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Spreadsheet;
-use App\Imports\ContactsImport;
 use App\Http\Requests\SpreadsheetStoreRequest;
-
+use App\Jobs\EnqueueSpreadsheetImportJob;
 use Inertia\Inertia;
-use Maatwebsite\Excel\Facades\Excel;
 use Inertia\Response as InertiaResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class SpreadsheetsController extends Controller
 {
@@ -27,7 +24,7 @@ class SpreadsheetsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(SpreadsheetStoreRequest $request): InertiaResponse | RedirectResponse
+    public function store(SpreadsheetStoreRequest $request): InertiaResponse
     {
         $file = $request->file('file')
             ->storeAs(
@@ -39,7 +36,8 @@ class SpreadsheetsController extends Controller
             'user_id' => $request->user()->id,
             'path' => $file,
         ]);
-        Excel::queueImport(new ContactsImport($spreadsheet), $file);
+
+        EnqueueSpreadsheetImportJob::dispatch($spreadsheet);
         return Inertia::render(
             'Spreadsheets',
             ['spreadsheets' => Spreadsheet::with(['user'])->paginate()]
