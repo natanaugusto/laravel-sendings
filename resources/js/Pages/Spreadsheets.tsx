@@ -22,6 +22,7 @@ export default function Index({ auth }: PageProps) {
     data,
     setData,
     post,
+    reset,
     errors,
     processing,
     recentlySuccessful,
@@ -31,16 +32,10 @@ export default function Index({ auth }: PageProps) {
   const submit = (e: FormEvent) => {
     e.preventDefault();
     post(route("spreadsheets.store"));
+    reset();
   };
   return (
-    <Authenticated
-      user={auth.user}
-      header={
-        <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-          Spreadsheets
-        </h2>
-      }
-    >
+    <Authenticated user={auth.user}>
       <Head title="Spreadsheets" />
       <div className="sm:py-4 sm:pb-2 lg:py-8 lg:pb-4">
         <div className="max-w-7xl mx-auto sm:px-4 lg:px-6 space-y-6">
@@ -96,23 +91,35 @@ export default function Index({ auth }: PageProps) {
                 <thead>
                   <tr className="bg-gray-100">
                     <th className="px-4 py-2 w-20">ID</th>
-                    <th className="px-4 py-2">User</th>
+                    <th className="px-4 py-2 w-52">User</th>
                     <th className="px-4 py-2">Path</th>
-                    <th className="px-4 py-2">Rows</th>
-                    <th className="px-4 py-2">Imported</th>
-                    <th className="px-4 py-2">Fails</th>
+                    <th className="px-4 py-2 w-32">Rows</th>
+                    <th className="px-4 py-2 w-32">Imported</th>
+                    <th className="px-4 py-2 w-32">Fails</th>
                   </tr>
                 </thead>
                 <tbody>
                   {spreadsheets.data.map(
                     ({ id, user, path, rows, imported, fails }) => (
                       <tr key={id}>
-                        <td className="border px-4 py-2">{id}</td>
-                        <td className="border px-4 py-2">{user.name}</td>
-                        <td className="border px-4 py-2">{path}</td>
-                        <td className="border px-4 py-2">{rows}</td>
-                        <td className="border px-4 py-2">{imported}</td>
-                        <td className="border px-4 py-2">{fails}</td>
+                        <td className="border px-4 py-2 overflow-x-scroll scrollbar-hide text-center">
+                          {id}
+                        </td>
+                        <td className="border px-4 py-2 overflow-x-scroll scrollbar-hide text-center">
+                          {user.name}
+                        </td>
+                        <td className="border px-4 py-2 overflow-x-scroll scrollbar-hide text-center">
+                          {path}
+                        </td>
+                        <td className="border px-4 py-2 overflow-x-scroll scrollbar-hide text-center">
+                          {rows}
+                        </td>
+                        <td className="border px-4 py-2 overflow-x-scroll scrollbar-hide text-center">
+                          {imported}
+                        </td>
+                        <td className="border px-4 py-2 overflow-x-scroll scrollbar-hide text-center">
+                          {fails}
+                        </td>
                       </tr>
                     )
                   )}
