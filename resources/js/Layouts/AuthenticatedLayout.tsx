@@ -35,6 +35,12 @@ export default function Authenticated({
                   Dashboard
                 </NavLink>
                 <NavLink
+                  href={route("messages.index")}
+                  active={route().current("messages.index")}
+                >
+                  Messages
+                </NavLink>
+                <NavLink
                   href={route("contacts.index")}
                   active={route().current("contacts.index")}
                 >
@@ -142,6 +148,24 @@ export default function Authenticated({
               active={route().current("dashboard")}
             >
               Dashboard
+            </ResponsiveNavLink>
+            <ResponsiveNavLink
+              href={route("messages.index")}
+              active={route().current("messages.index")}
+            >
+              Messages
+            </ResponsiveNavLink>
+            <ResponsiveNavLink
+              href={route("contacts.index")}
+              active={route().current("contacts.index")}
+            >
+              Contacts
+            </ResponsiveNavLink>
+            <ResponsiveNavLink
+              href={route("spreadsheets.index")}
+              active={route().current("spreadsheets.index")}
+            >
+              Spreadsheets
             </ResponsiveNavLink>
           </div>
 

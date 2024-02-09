@@ -50,6 +50,21 @@ export interface ContactFormData {
   document: string | null;
 }
 
+export interface Message {
+  id: number;
+  user: User;
+  subject: string;
+  body: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MessageFormData {
+  id: number;
+  subject: string;
+  body: string;
+}
+
 export type PageProps<
   T extends Record<string, unknown> = Record<string, unknown>
 > = T & {

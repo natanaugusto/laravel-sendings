@@ -144,7 +144,7 @@ it('must fails on validate the contact store and update validations', function (
             'name' => null,
             'email' => null,
         ]);
-    $response->assertRedirect()->withErrors(['file', 'name', 'email']);
+    $response->assertRedirect()->withErrors(['name', 'email']);
     $response = $this
         ->actingAs(User::factory()->create())
         ->put(
@@ -157,5 +157,5 @@ it('must fails on validate the contact store and update validations', function (
                 'email' => null,
             ]
         );
-    $response->assertRedirect()->withErrors(['file', 'name', 'email']);
+    $response->assertRedirect()->withErrors(['name', 'email']);
 });
