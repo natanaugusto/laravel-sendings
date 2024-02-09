@@ -38,8 +38,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('spreadsheets', SpreadsheetsController::class)->only(['index', 'store', 'destroy']);
-    Route::resource('contacts', ContactsController::class);
-    Route::resource('messages', MessagesController::class);
+    Route::resource('contacts', ContactsController::class)->except(['show']);
+    Route::resource('messages', MessagesController::class)->except(['show']);
+    Route::post('/messages/send/{message}', [MessagesController::class, 'send'])->name('messages.send');
 });
 
 require __DIR__ . '/auth.php';

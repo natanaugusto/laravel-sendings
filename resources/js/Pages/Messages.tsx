@@ -15,7 +15,11 @@ import {
   Pagination as PaginationType,
 } from "@/types";
 import { FormEvent, MouseEventHandler } from "react";
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import {
+  PencilIcon,
+  TrashIcon,
+  PaperAirplaneIcon,
+} from "@heroicons/react/24/solid";
 
 export default function Index({ auth }: PageProps) {
   const messages = usePage().props.messages as PaginationType<Message>;
@@ -113,7 +117,7 @@ export default function Index({ auth }: PageProps) {
                     >
                       Updated
                     </th>
-                    <th className="w-36 px-4 py-2">Actions</th>
+                    <th className="w-52 px-4 py-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -141,8 +145,18 @@ export default function Index({ auth }: PageProps) {
                         <td className="border px-4 py-2 space-x-2 text-center">
                           <PrimaryButton
                             onClick={() =>
+                              router.post(
+                                route("messages.send", [{ id }, queryParams])
+                              )
+                            }
+                            className="bg-green-500 hover:bg-green-700 focus:bg-green-700 active:bg-green-900"
+                          >
+                            <PaperAirplaneIcon className="h-4 w-4" />
+                          </PrimaryButton>
+                          <PrimaryButton
+                            onClick={() =>
                               router.get(
-                                route("messages.edit", [{ id: 1 }, queryParams])
+                                route("messages.edit", [{ id }, queryParams])
                               )
                             }
                             className="bg-blue-500 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900"

@@ -1,8 +1,10 @@
 <?php
 
+use App\Jobs\SendMessageJob;
 use App\Models\User;
 use App\Models\Message;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Queue;
 use Inertia\Testing\AssertableInertia;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
@@ -164,4 +166,14 @@ it('must fails on validate the message store and update validations', function (
             ]
         );
     $response->assertRedirect()->withErrors(['subject', 'body']);
+});
+
+it('must send message for all contacts by email', function () {
+    $message = Message::factory()->create()->refresh();
+    Queue::fake();
+    $response = $this
+        ->actingAs($message->user)
+        ->post(route('messages.send', ['message' => $message]));
+    $response->assertRedirect();
+    Queue::assertPushed(SendMessageJob::class);
 });

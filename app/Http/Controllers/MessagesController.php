@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Message;
 use App\Http\Requests\MessageRequest;
 use App\Http\Requests\MessageStoreRequest;
+use App\Jobs\SendMessageJob;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
@@ -71,6 +72,12 @@ class MessagesController extends Controller
     public function destroy(Message $message): RedirectResponse
     {
         $message->deleteOrFail();
+        return Redirect::back();
+    }
+
+    public function send(MessageRequest $request, Message $message): RedirectResponse
+    {
+        SendMessageJob::dispatch($request->user(), $message);
         return Redirect::back();
     }
 
