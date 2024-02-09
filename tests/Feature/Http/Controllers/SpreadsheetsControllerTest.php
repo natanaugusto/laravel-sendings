@@ -1,7 +1,6 @@
 <?php
 
 use App\Exports\ContactsExport;
-use App\Imports\ContactsImport;
 use App\Jobs\EnqueueSpreadsheetImportJob;
 use App\Models\Contact;
 use App\Models\User;

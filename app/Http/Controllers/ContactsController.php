@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contact;
+use App\Http\Requests\ContactRequest;
 use App\Http\Requests\ContactStoreRequest;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -14,20 +16,20 @@ class ContactsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): InertiaResponse
+    public function index(ContactRequest $request): InertiaResponse
     {
         return Inertia::render('Contacts', [
-            'contacts' => Contact::with(['spreadsheet'])->paginate()
+            'contacts' => $this->getPagiantion($request)
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): InertiaResponse
+    public function create(ContactRequest $request): InertiaResponse
     {
         return Inertia::render('Contacts', [
-            'contacts' => Contact::with(['spreadsheet'])->paginate(),
+            'contacts' => $this->getPagiantion($request),
             'showModalForm' => true
         ]);
     }
@@ -38,16 +40,16 @@ class ContactsController extends Controller
     public function store(ContactStoreRequest $request): RedirectResponse
     {
         Contact::create($request->all());
-        return Redirect::route('contacts.index');
+        return Redirect::back();
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Contact $contact): InertiaResponse
+    public function edit(ContactRequest $request, Contact $contact): InertiaResponse
     {
         return Inertia::render('Contacts', [
-            'contacts' => Contact::with(['spreadsheet'])->paginate(),
+            'contacts' => $this->getPagiantion($request),
             'showModalForm' => true,
             'contact' => $contact
         ]);
@@ -60,7 +62,7 @@ class ContactsController extends Controller
     {
         $contact->fill($request->all());
         $contact->saveOrFail();
-        return Redirect::route('contacts.index');
+        return Redirect::back();
     }
 
     /**
@@ -69,6 +71,18 @@ class ContactsController extends Controller
     public function destroy(Contact $contact): RedirectResponse
     {
         $contact->deleteOrFail();
-        return Redirect::route('contacts.index');
+        return Redirect::back();
+    }
+
+    /**
+     * Mount the pagination for contacts
+     */
+    private function getPagiantion(ContactRequest $request): Paginator
+    {
+        [$column, $direction] = $request->sort();
+        return Contact::orderBy($column, $direction)
+            ->with(['spreadsheet'])
+            ->paginate()
+            ->appends(['sort' => $request->query('sort')]);
     }
 }

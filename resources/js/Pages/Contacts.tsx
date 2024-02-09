@@ -14,13 +14,20 @@ import {
   PageProps,
   Pagination as PaginationType,
 } from "@/types";
-import { FormEvent } from "react";
+import { FormEvent, MouseEventHandler } from "react";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 
 export default function Index({ auth }: PageProps) {
   const contacts = usePage().props.contacts as PaginationType<Contact>;
   const showForm = (usePage().props?.showModalForm as boolean) ?? false;
   const contact = (usePage().props?.contact as Contact) ?? null;
+  // @ts-ignore
+  const queryParams = usePage().props?.ziggy?.query ?? {};
+  const [, sortDirection] =
+    queryParams?.sort === undefined || typeof queryParams?.sort === "function"
+      ? [, "asc"]
+      : queryParams.sort.split("|");
+
   const {
     data,
     setData,
@@ -37,6 +44,8 @@ export default function Index({ auth }: PageProps) {
       email: null,
       phone: null,
       document: null,
+      created_at: null,
+      updated_at: null,
     }
   );
 
@@ -47,8 +56,17 @@ export default function Index({ auth }: PageProps) {
       : post(route("contacts.store"));
   };
 
+  const sortBy = (column: string): MouseEventHandler => {
+    return () => {
+      queryParams.sort = `${column}|${
+        sortDirection === "asc" ? "desc" : "asc"
+      }`;
+      router.get(route("contacts.index", [{}, queryParams]));
+    };
+  };
+
   const closeModal = () => {
-    router.visit(route("contacts.index"));
+    router.get(route("contacts.index", [{}, queryParams]));
   };
   return (
     <Authenticated user={auth.user}>
@@ -57,7 +75,9 @@ export default function Index({ auth }: PageProps) {
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div className="mx-auto sm:py-3 lg:py-4">
             <PrimaryButton
-              onClick={() => router.visit(route("contacts.create"))}
+              onClick={() =>
+                router.visit(route("contacts.create", [{}, queryParams]))
+              }
               className="bg-green-500 hover:bg-green-700 focus:bg-green-700 active:bg-green-900"
             >
               Create
@@ -68,18 +88,52 @@ export default function Index({ auth }: PageProps) {
               <table className="table-fixed w-full">
                 <thead>
                   <tr className="bg-gray-100">
-                    <th className="px-4 py-2 w-20">ID</th>
-                    <th className="px-4 py-2">Name</th>
-                    <th className="px-4 py-2">Email</th>
+                    <th
+                      className="px-4 py-2 w-20 cursor-pointer"
+                      onClick={sortBy("id")}
+                    >
+                      ID
+                    </th>
+                    <th
+                      className="px-4 py-2 cursor-pointer"
+                      onClick={sortBy("name")}
+                    >
+                      Name
+                    </th>
+                    <th
+                      className="px-4 py-2 cursor-pointer"
+                      onClick={sortBy("email")}
+                    >
+                      Email
+                    </th>
                     <th className="px-4 py-2">Phone</th>
                     <th className="px-4 py-2">Document</th>
-                    <th className="px-4 py-2">Spreadsheet</th>
-                    <th className="px-4 py-2">Actions</th>
+                    <th
+                      className="px-4 py-2 cursor-pointer"
+                      onClick={sortBy("created_at")}
+                    >
+                      Created
+                    </th>
+                    <th
+                      className="px-4 py-2 cursor-pointer"
+                      onClick={sortBy("updated_at")}
+                    >
+                      Updated
+                    </th>
+                    <th className="w-36 px-4 py-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {contacts.data.map(
-                    ({ id, name, email, phone, document, spreadsheet }) => (
+                    ({
+                      id,
+                      name,
+                      email,
+                      phone,
+                      document,
+                      created_at,
+                      updated_at,
+                    }) => (
                       <tr key={id}>
                         <td className="border px-4 py-2 overflow-x-scroll scrollbar-hide text-center">
                           {id}
@@ -97,12 +151,17 @@ export default function Index({ auth }: PageProps) {
                           {document}
                         </td>
                         <td className="border px-4 py-2 overflow-x-scroll scrollbar-hide text-center">
-                          {spreadsheet?.path ?? "-"}
+                          {created_at}
+                        </td>
+                        <td className="border px-4 py-2 overflow-x-scroll scrollbar-hide text-center">
+                          {updated_at}
                         </td>
                         <td className="border px-4 py-2 space-x-2 text-center">
                           <PrimaryButton
                             onClick={() =>
-                              router.visit(route("contacts.edit", { id }))
+                              router.get(
+                                route("contacts.edit", [{ id: 1 }, queryParams])
+                              )
                             }
                             className="bg-blue-500 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900"
                           >
@@ -110,7 +169,9 @@ export default function Index({ auth }: PageProps) {
                           </PrimaryButton>
                           <PrimaryButton
                             onClick={() =>
-                              postDelete(route("contacts.destroy", { id }))
+                              postDelete(
+                                route("contacts.destroy", [{ id }, queryParams])
+                              )
                             }
                             className="bg-red-500 hover:bg-red-700 focus:bg-red-700 active:bg-red-900"
                           >

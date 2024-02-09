@@ -38,6 +38,8 @@ export interface Contact {
   phone: string;
   document: string;
   spreadsheet: Spreadsheet;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ContactFormData {

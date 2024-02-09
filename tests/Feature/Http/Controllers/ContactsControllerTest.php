@@ -7,6 +7,7 @@ use Inertia\Testing\AssertableInertia;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 it('has a list page', function () {
+    Contact::factory(20)->create();
     $response = $this
         ->actingAs(User::factory()->create())
         ->get(route('contacts.index'));
@@ -15,7 +16,52 @@ it('has a list page', function () {
         fn (AssertableInertia $page) => $page
             ->component('Contacts')
             ->has('contacts')
-            ->where('contacts', Contact::paginate()->toArray())
+            ->where(
+                'contacts',
+                Contact::orderBy('id', 'asc')
+                    ->with(['spreadsheet'])
+                    ->paginate()
+                    ->toArray()
+            )
+    );
+});
+
+it('must order by parameter from querystring', function () {
+    Contact::factory(20)->create();
+    $requester = $this
+        ->actingAs(User::factory()->create());
+    $response = $requester
+        ->get(route('contacts.index', ['sort' => 'name']));
+    $response->assertStatus(HttpResponse::HTTP_OK);
+    $response->assertInertia(
+        fn (AssertableInertia $page) => $page
+            ->component('Contacts')
+            ->has('contacts')
+            ->where(
+                'contacts',
+                Contact::orderBy('name', 'asc')
+                    ->with(['spreadsheet'])
+                    ->paginate()
+                    ->appends(['sort' => 'name'])
+                    ->toArray()
+            )
+    );
+
+    $response = $requester
+        ->get(route('contacts.index', ['sort' => 'name|desc']));
+    $response->assertStatus(HttpResponse::HTTP_OK);
+    $response->assertInertia(
+        fn (AssertableInertia $page) => $page
+            ->component('Contacts')
+            ->has('contacts')
+            ->where(
+                'contacts',
+                Contact::orderBy('name', 'desc')
+                    ->with(['spreadsheet'])
+                    ->paginate()
+                    ->appends(['sort' => 'name|desc'])
+                    ->toArray()
+            )
     );
 });
 
@@ -41,7 +87,7 @@ it('must create a new contact', function () {
             route('contacts.store', $contact->toArray())
         );
     $response->assertStatus(HttpResponse::HTTP_FOUND);
-    $response->assertRedirect(route('contacts.index'));
+    $response->assertRedirect();
     $this->assertDatabaseHas(Contact::class, $contact->only(['email']));
 });
 
@@ -77,7 +123,7 @@ it('must to update a contact', function () {
             $data
         );
     $response->assertStatus(HttpResponse::HTTP_FOUND);
-    $response->assertRedirect(route('contacts.index'));
+    $response->assertRedirect();
     $this->assertDatabaseHas(Contact::class, $data);
 });
 
@@ -87,7 +133,7 @@ it('must delete a contact', function () {
         ->actingAs(User::factory()->create())
         ->delete(route('contacts.destroy', ['contact' => $contact->id]));
     $response->assertStatus(HttpResponse::HTTP_FOUND);
-    $response->assertRedirect(route('contacts.index'));
+    $response->assertRedirect();
     $this->assertDatabaseMissing(Contact::class, ['id' => $contact->id]);
 });
 
