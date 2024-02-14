@@ -3,23 +3,18 @@
 namespace App\Models;
 
 use App\Enums\IncreaseType;
+use App\Models\Traits\BelongsToUser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Spreadsheet extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToUser;
 
     protected $fillable = ['user_id', 'path'];
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
 
     public function contacts(): HasMany
     {
