@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\File;
 use App\Models\Message;
 use App\Models\User;
 
@@ -36,4 +37,12 @@ it('must belongs to a user', function () {
         'user_id' => User::factory()->create()->id
     ]);
     expect($message->user)->toBeInstanceOf(User::class);
+});
+
+it('must have a file', function () {
+    $message = Message::factory()->create();
+    $message->file()->create(File::factory()->make()->toArray());
+    $message->save();
+    $message->refresh();
+    expect($message->file)->toBeInstanceOf(File::class);
 });

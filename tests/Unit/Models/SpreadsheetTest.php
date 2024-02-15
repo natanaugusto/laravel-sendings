@@ -2,16 +2,17 @@
 
 use App\Enums\IncreaseType;
 use App\Models\Contact;
+use App\Models\File;
 use App\Models\User;
 use App\Models\Spreadsheet;
 
 it('must create a spreadsheet', function () {
     $data = [
         'user_id' => User::factory()->create()->id,
-        'path' => 'path/to/file',
+        'name' => 'filename.xlsx',
     ];
     $spreadsheet = Spreadsheet::create($data)->refresh();
-    expect($spreadsheet->path)->toBe($data['path']);
+    expect($spreadsheet->name)->toBe($data['name']);
     expect($spreadsheet->rows)->toBe(0);
     expect($spreadsheet->imported)->toBe(0);
     expect($spreadsheet->fails)->toBe(0);
@@ -21,7 +22,7 @@ it('must create a spreadsheet', function () {
 it('must update an existent spreadsheet', function () {
     $spreadsheet = Spreadsheet::factory()->create();
     $data = [
-        'path' => '/new/path/to',
+        'name' => 'new_filename.xlsx',
     ];
     $spreadsheet->update($data);
     $this->assertDatabaseHas(Spreadsheet::class, $data);
@@ -55,4 +56,12 @@ it('must have methods to increase fails and imported values', function () {
     expect($sheet->fails)->toBe(1);
     $sheet->increase(count: 2);
     expect($sheet->imported)->toBe(3);
+});
+
+it('must have a file', function () {
+    $sheet = Spreadsheet::factory()->create();
+    $sheet->file()->create(File::factory()->make()->toArray());
+    $sheet->save();
+    $sheet->refresh();
+    expect($sheet->file)->toBeInstanceOf(File::class);
 });

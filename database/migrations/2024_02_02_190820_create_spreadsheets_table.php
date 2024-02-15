@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\File;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,7 +16,7 @@ return new class extends Migration
         Schema::create('spreadsheets', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class);
-            $table->string('path');
+            $table->string('name');
             $table->unsignedInteger('rows')->default(0);
             $table->unsignedInteger('imported')->default(0);
             $table->unsignedInteger('fails')->default(0);

@@ -9,14 +9,20 @@ it('must create a file', function () {
         'path' => 'path/to/file',
         'size' => 2024,
     ];
-    $file = File::create($data)->refresh();
+    $file = new File($data);
+    $file->fileable_id = 1;
+    $file->fileable_type = 'App\Models\Test';
+    $file->save();
     expect($file->path)->toBe($data['path']);
     expect($file->size)->toBe($data['size']);
     $this->assertDatabaseHas(File::class, $data);
 });
 
 it('must update an existent file', function () {
-    $file = File::factory()->create();
+    $file = new File(File::factory()->make()->toArray());
+    $file->fileable_id = 1;
+    $file->fileable_type = 'App\Models\Test';
+    $file->save();
     $data = [
         'path' => '/new/path/to/file',
     ];
@@ -25,14 +31,18 @@ it('must update an existent file', function () {
 });
 
 it('must delete an existent file', function () {
-    $file = File::factory()->create();
+    $file = new File(File::factory()->make()->toArray());
+    $file->fileable_id = 1;
+    $file->fileable_type = 'App\Models\Test';
+    $file->save();
     $file->delete();
     $this->assertDatabaseMissing(File::class, ['id' => $file->id]);
 });
 
 it('must belongs to a user', function () {
-    $file = File::factory()->create([
-        'user_id' => User::factory()->create()->id
-    ]);
+    $file = new File(File::factory()->make()->toArray());
+    $file->fileable_id = 1;
+    $file->fileable_type = 'App\Models\Test';
+    $file->save();
     expect($file->user)->toBeInstanceOf(User::class);
 });

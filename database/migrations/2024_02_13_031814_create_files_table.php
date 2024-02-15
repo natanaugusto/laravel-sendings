@@ -17,8 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class);
             $table->string('path');
             $table->unsignedBigInteger('size');
-            $table->unsignedInteger('fileable_id')->nullable();
-            $table->string('fileable_type')->nullable();
+            $table->morphs('fileable');
             $table->timestamps();
         });
     }

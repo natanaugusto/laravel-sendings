@@ -21,7 +21,7 @@ export interface User {
 export interface Spreadsheet {
   id: number;
   user: User;
-  path: string;
+  name: string;
   rows: number;
   imported: number;
   fails: number;

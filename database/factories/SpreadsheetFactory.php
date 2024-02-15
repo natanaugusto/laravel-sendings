@@ -19,7 +19,7 @@ class SpreadsheetFactory extends Factory
     {
         return [
             'user_id' => User::factory()->create()->id,
-            'path' => fake()->filePath(),
+            'name' => fake()->filePath(),
             'rows' => fake()->numberBetween(5, 20),
         ];
     }

@@ -100,7 +100,7 @@ export default function Index({ auth }: PageProps) {
                 </thead>
                 <tbody>
                   {spreadsheets.data.map(
-                    ({ id, user, path, rows, imported, fails }) => (
+                    ({ id, user, name, rows, imported, fails }) => (
                       <tr key={id}>
                         <td className="border px-4 py-2 overflow-x-scroll scrollbar-hide text-center">
                           {id}
@@ -109,7 +109,7 @@ export default function Index({ auth }: PageProps) {
                           {user.name}
                         </td>
                         <td className="border px-4 py-2 overflow-x-scroll scrollbar-hide text-center">
-                          {path}
+                          {name}
                         </td>
                         <td className="border px-4 py-2 overflow-x-scroll scrollbar-hide text-center">
                           {rows}

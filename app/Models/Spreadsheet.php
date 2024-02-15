@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\IncreaseType;
+use App\Models\Traits\HasFile;
 use App\Models\Traits\BelongsToUser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Model;
@@ -12,9 +13,9 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Spreadsheet extends Model
 {
-    use HasFactory, BelongsToUser;
+    use HasFactory, BelongsToUser, HasFile;
 
-    protected $fillable = ['user_id', 'path'];
+    protected $fillable = ['user_id', 'name'];
 
     public function contacts(): HasMany
     {
@@ -39,7 +40,7 @@ class Spreadsheet extends Model
 
     protected static function fillRowsFromSpreadsheet(self $model): void
     {
-        $path = Storage::path($model->path);
+        $path = Storage::path($model->name);
         $model->rows = file_exists($path) ?
             IOFactory::load($path)->getActiveSheet()->getHighestRow() : 0;
         $model->save();
