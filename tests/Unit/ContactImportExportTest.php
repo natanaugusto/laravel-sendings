@@ -11,8 +11,8 @@ it('must export a contact spreadsheet in storage path', function () {
     $contacts = Contact::factory(10)->make();
     $export = new ContactsExport($contacts);
     Excel::fake();
-    Excel::store($export, $file);
-    Excel::assertStored($file);
+    Excel::store($export, $file, Spreadsheet::STORAGE_DISK);
+    Excel::assertStored($file, Spreadsheet::STORAGE_DISK);
 });
 
 it('must import a contact spreadsheet', function () {
@@ -21,26 +21,26 @@ it('must import a contact spreadsheet', function () {
     $file = 'export_example.xlsx';
     $contacts = Contact::factory($count)->make();
     $export = new ContactsExport($contacts);
-    Excel::store($export, $file);
+    Excel::store($export, $file, Spreadsheet::STORAGE_DISK);
     $import = new ContactsImport(Spreadsheet::factory()->create([
-        'path' => $file
+        'name' => $file
     ]));
-    Excel::import($import, $file);
+    Excel::import($import, $file, Spreadsheet::STORAGE_DISK);
     $this->assertDatabaseCount(Contact::class, $count + $beforeImport);
-    unlink(storage_path("app/{$file}"));
+    unlink(config('filesystems.disks.spreadsheet.root') . "/{$file}");
 });
 
-it('must import a contact spreadsheet using queue', function () {
+it('must enqueu the importation a contact spreadsheet', function () {
     $count = 10;
     $file = 'export_example.xlsx';
     $contacts = Contact::factory($count)->make();
     $export = new ContactsExport($contacts);
-    Excel::store($export, $file);
+    Excel::store($export, $file, Spreadsheet::STORAGE_DISK);
     Excel::fake();
     $import = new ContactsImport(Spreadsheet::factory()->create([
-        'path' => $file
+        'name' => $file
     ]));
-    Excel::queueImport($import, $file);
-    Excel::assertQueued($file);
-    unlink(storage_path("app/{$file}"));
+    Excel::queueImport($import, $file, Spreadsheet::STORAGE_DISK);
+    Excel::assertQueued($file, Spreadsheet::STORAGE_DISK);
+    unlink(config('filesystems.disks.spreadsheet.root') . "/{$file}");
 });

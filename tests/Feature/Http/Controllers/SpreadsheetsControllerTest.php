@@ -3,9 +3,11 @@
 use App\Exports\ContactsExport;
 use App\Jobs\EnqueueSpreadsheetImportJob;
 use App\Models\Contact;
+use App\Models\File;
 use App\Models\User;
 use App\Models\Spreadsheet;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia;
@@ -35,7 +37,7 @@ it('must upload a spreadsheet', function () {
     $export = new ContactsExport($contacts);
     Excel::store($export, $file);
     $exampleFile = storage_path("app/{$file}");
-    Storage::fake('local');
+    Storage::fake(Spreadsheet::STORAGE_DISK);
     Excel::fake();
     $response = $this
         ->actingAs($user)
@@ -47,14 +49,17 @@ it('must upload a spreadsheet', function () {
         fn (AssertableInertia $page) => $page->component('Spreadsheets')
     );
     $uploadFileName = now()->format('YmdHi') . "_{$file}";
-    $where = [
+    $this->assertDatabaseHas(Spreadsheet::class, [
         'user_id' => $user->id,
-        'path' => $uploadFileName
-    ];
-    $this->assertDatabaseHas(Spreadsheet::class, $where);
-    Excel::assertQueued($uploadFileName);
-    Storage::assertExists($uploadFileName);
-    unlink(storage_path("app/{$file}"));
+        'name' => $uploadFileName
+    ]);
+    $this->assertDatabaseHas(File::class, [
+        'user_id' => $user->id,
+        ['path', 'like', "%/{$uploadFileName}"]
+    ]);
+    Excel::assertQueued($uploadFileName, Spreadsheet::STORAGE_DISK);
+    Storage::disk(Spreadsheet::STORAGE_DISK)->assertExists($uploadFileName);
+    unlink($exampleFile);
 });
 
 it('must fails if the file was not sended', function () {
@@ -85,8 +90,12 @@ it('must dispatch an EnqueueSpreadsheetImportJob', function () {
         fn (AssertableInertia $page) => $page->component('Spreadsheets')
     );
     $uploadFileName = now()->format('YmdHi') . "_{$file}";
-    Queue::assertPushed(function (EnqueueSpreadsheetImportJob $job) use ($uploadFileName) {
-        return $job->spreadsheet->path = $uploadFileName;
-    });
+    Queue::assertPushedOn(
+        Spreadsheet::QUEUE_CONNECTION,
+        EnqueueSpreadsheetImportJob::class,
+        function (EnqueueSpreadsheetImportJob $job) use ($uploadFileName) {
+            return $job->spreadsheet->name === $uploadFileName;
+        }
+    );
     unlink(storage_path("app/{$file}"));
 });

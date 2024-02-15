@@ -3,17 +3,18 @@
 namespace App\Models;
 
 use App\Enums\IncreaseType;
-use App\Models\Traits\HasFile;
 use App\Models\Traits\BelongsToUser;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-class Spreadsheet extends Model
+class Spreadsheet extends FileableBaseModel
 {
-    use HasFactory, BelongsToUser, HasFile;
+    use HasFactory, BelongsToUser;
+
+    const STORAGE_DISK = 'spreadsheet';
+    const QUEUE_CONNECTION = 'spreadsheet';
 
     protected $fillable = ['user_id', 'name'];
 

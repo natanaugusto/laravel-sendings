@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasFile;
 use App\Models\Traits\BelongsToUser;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Message extends Model
+class Message extends FileableBaseModel
 {
-    use HasFactory, BelongsToUser, HasFile;
+    use HasFactory, BelongsToUser;
 
     protected $fillable = ['user_id', 'subject', 'body'];
 }
