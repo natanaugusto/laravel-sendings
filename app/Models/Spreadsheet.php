@@ -41,7 +41,7 @@ class Spreadsheet extends FileableBaseModel
 
     protected static function fillRowsFromSpreadsheet(self $model): void
     {
-        $path = Storage::path($model->name);
+        $path = Storage::disk(self::STORAGE_DISK)->path($model->name);
         $model->rows = file_exists($path) ?
             IOFactory::load($path)->getActiveSheet()->getHighestRow() : 0;
         $model->save();

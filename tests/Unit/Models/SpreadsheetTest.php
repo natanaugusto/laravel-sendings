@@ -1,10 +1,13 @@
 <?php
 
 use App\Enums\IncreaseType;
+use App\Exports\ContactsExport;
 use App\Models\Contact;
 use App\Models\File;
 use App\Models\User;
 use App\Models\Spreadsheet;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 it('must create a spreadsheet', function () {
     $data = [
@@ -64,4 +67,18 @@ it('must have a file', function () {
     $sheet->save();
     $sheet->refresh();
     expect($sheet->file)->toBeInstanceOf(File::class);
+});
+
+it('must fill the attribute rows with the total of file rows', function () {
+    $count = 10;
+    $file = 'example.xlsx';
+    $contacts = Contact::factory($count)->make();
+    $export = new ContactsExport($contacts);
+    Excel::store($export, $file, Spreadsheet::STORAGE_DISK);
+    $sheet = Spreadsheet::factory()->create([
+        'name' => $file,
+    ]);
+    $sheet->refresh();
+    expect($sheet->rows)->toBe($count);
+    unlink(Storage::disk(Spreadsheet::STORAGE_DISK)->path($file));
 });
