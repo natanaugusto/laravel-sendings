@@ -30,7 +30,7 @@ class EnqueueSpreadsheetImportJob implements ShouldQueue
         Excel::queueImport(
             new ContactsImport($this->spreadsheet),
             $this->spreadsheet->name,
-            Spreadsheet::STORAGE_DISK
-        )->allOnQueue(Spreadsheet::QUEUE_CONNECTION);
+            Spreadsheet::getStorageDisk()
+        )->allOnQueue(Spreadsheet::getQueueConnection());
     }
 }

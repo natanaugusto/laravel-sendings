@@ -13,9 +13,6 @@ class Spreadsheet extends FileableBaseModel
 {
     use HasFactory, BelongsToUser;
 
-    const STORAGE_DISK = 'spreadsheet';
-    const QUEUE_CONNECTION = 'spreadsheet';
-
     protected $fillable = ['user_id', 'name'];
 
     public function contacts(): HasMany
@@ -33,6 +30,15 @@ class Spreadsheet extends FileableBaseModel
         $this->save();
     }
 
+    public static function getStorageDisk(): string
+    {
+        return 'spreadsheet';
+    }
+    public static function getQueueConnection(): string
+    {
+        return 'spreadsheet';
+    }
+
     protected static function boot(): void
     {
         parent::boot();
@@ -41,7 +47,7 @@ class Spreadsheet extends FileableBaseModel
 
     protected static function fillRowsFromSpreadsheet(self $model): void
     {
-        $path = Storage::disk(self::STORAGE_DISK)->path($model->name);
+        $path = Storage::disk(static::getStorageDisk())->path($model->name);
         $model->rows = file_exists($path) ?
             IOFactory::load($path)->getActiveSheet()->getHighestRow() : 0;
         $model->save();

@@ -27,23 +27,14 @@ class SpreadsheetsController extends Controller
      */
     public function store(SpreadsheetStoreRequest $request): InertiaResponse
     {
-        $file = $request->file('file')
-            ->storeAs(
-                '',
-                now()->format('YmdHi') . "_{$request->file('file')->getClientOriginalName()}",
-                Spreadsheet::STORAGE_DISK
-            );
+        $file = $request->file('file');
         $spreadsheet = Spreadsheet::create([
             'user_id' => $request->user()->id,
-            'name' => $file,
+            'name' => Spreadsheet::generateFilename($file),
         ]);
-        $spreadsheet->file()->create([
-            'user_id' => $spreadsheet->user_id,
-            'path' => Storage::disk(Spreadsheet::STORAGE_DISK)->path($file),
-            'size' => Storage::disk(Spreadsheet::STORAGE_DISK)->size($file),
-        ]);
+        $spreadsheet->storeFile($file);
         $spreadsheet->save();
-        EnqueueSpreadsheetImportJob::dispatch($spreadsheet)->onQueue(Spreadsheet::QUEUE_CONNECTION);
+        EnqueueSpreadsheetImportJob::dispatch($spreadsheet)->onQueue(Spreadsheet::getQueueConnection());
         return Inertia::render(
             'Spreadsheets',
             ['spreadsheets' => Spreadsheet::with(['user'])->paginate()]

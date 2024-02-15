@@ -74,11 +74,11 @@ it('must fill the attribute rows with the total of file rows', function () {
     $file = 'example.xlsx';
     $contacts = Contact::factory($count)->make();
     $export = new ContactsExport($contacts);
-    Excel::store($export, $file, Spreadsheet::STORAGE_DISK);
+    Excel::store($export, $file, Spreadsheet::getStorageDisk());
     $sheet = Spreadsheet::factory()->create([
         'name' => $file,
     ]);
     $sheet->refresh();
     expect($sheet->rows)->toBe($count);
-    unlink(Storage::disk(Spreadsheet::STORAGE_DISK)->path($file));
+    unlink(Storage::disk(Spreadsheet::getStorageDisk())->path($file));
 });

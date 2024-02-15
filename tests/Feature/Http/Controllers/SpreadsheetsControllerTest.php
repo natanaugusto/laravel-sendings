@@ -7,7 +7,6 @@ use App\Models\File;
 use App\Models\User;
 use App\Models\Spreadsheet;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia;
@@ -37,7 +36,7 @@ it('must upload a spreadsheet', function () {
     $export = new ContactsExport($contacts);
     Excel::store($export, $file);
     $exampleFile = storage_path("app/{$file}");
-    Storage::fake(Spreadsheet::STORAGE_DISK);
+    Storage::fake(Spreadsheet::getStorageDisk());
     Excel::fake();
     $response = $this
         ->actingAs($user)
@@ -57,8 +56,8 @@ it('must upload a spreadsheet', function () {
         'user_id' => $user->id,
         ['path', 'like', "%/{$uploadFileName}"]
     ]);
-    Excel::assertQueued($uploadFileName, Spreadsheet::STORAGE_DISK);
-    Storage::disk(Spreadsheet::STORAGE_DISK)->assertExists($uploadFileName);
+    Excel::assertQueued($uploadFileName, Spreadsheet::getStorageDisk());
+    Storage::disk(Spreadsheet::getStorageDisk())->assertExists($uploadFileName);
     unlink($exampleFile);
 });
 
@@ -91,7 +90,7 @@ it('must dispatch an EnqueueSpreadsheetImportJob', function () {
     );
     $uploadFileName = now()->format('YmdHi') . "_{$file}";
     Queue::assertPushedOn(
-        Spreadsheet::QUEUE_CONNECTION,
+        Spreadsheet::getQueueConnection(),
         EnqueueSpreadsheetImportJob::class,
         function (EnqueueSpreadsheetImportJob $job) use ($uploadFileName) {
             return $job->spreadsheet->name === $uploadFileName;
