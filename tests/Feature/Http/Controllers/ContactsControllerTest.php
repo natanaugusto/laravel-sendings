@@ -84,7 +84,8 @@ it('must create a new contact', function () {
     $contact = Contact::factory()->make();
     $response = $this->actingAs(User::factory()->create())
         ->post(
-            route('contacts.store', $contact->toArray())
+            route('contacts.store'),
+            $contact->toArray()
         );
     $response->assertStatus(HttpResponse::HTTP_FOUND);
     $response->assertRedirect();

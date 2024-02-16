@@ -8,6 +8,7 @@ use App\Http\Requests\MessageStoreRequest;
 use App\Jobs\SendMessageJob;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -40,7 +41,11 @@ class MessagesController extends Controller
      */
     public function store(MessageStoreRequest $request): RedirectResponse
     {
-        Message::create($request->all());
+        $message = Message::create($request->all());
+        if ($request->hasFile('attaches')) {
+            $message->storeFiles($request->file('attaches'));
+            $message->save();
+        }
         return Redirect::back();
     }
 

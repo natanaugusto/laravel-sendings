@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Http\File as UploadedFile;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -15,6 +16,11 @@ abstract class FileableBaseModel extends Model
     public function file(): MorphOne
     {
         return $this->morphOne(File::class, 'fileable');
+    }
+
+    public function files(): MorphMany
+    {
+        return $this->morphMany(File::class, 'fileable');
     }
 
     public function storeFile(UploadedFile $file): string
@@ -31,6 +37,15 @@ abstract class FileableBaseModel extends Model
             'size' => Storage::disk(static::getStorageDisk())->size($fileName),
         ]);
         return $fileName;
+    }
+
+    public function storeFiles(array $files): array
+    {
+        $stored = [];
+        foreach ($files as $file) {
+            array_push($stored, $this->storeFile($file));
+        }
+        return $stored;
     }
 
     public static function generateFilename(UploadedFile $file): string

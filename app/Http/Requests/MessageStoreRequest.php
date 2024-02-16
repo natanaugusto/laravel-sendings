@@ -15,6 +15,7 @@ class MessageStoreRequest extends MessageRequest
             'user_id' => 'exists:App\Models\User,id',
             'subject' => 'required|max:255',
             'body' => 'required',
+            'attaches.*' => 'nullable|file'
         ];
     }
 

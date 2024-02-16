@@ -3,8 +3,10 @@
 use App\Jobs\SendMessageJob;
 use App\Models\User;
 use App\Models\Message;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
@@ -86,7 +88,8 @@ it('must create a new message', function () {
     $message = Message::factory()->make();
     $response = $this->actingAs(User::factory()->create())
         ->post(
-            route('messages.store', $message->toArray())
+            route('messages.store'),
+            $message->toArray()
         );
     $response->assertStatus(HttpResponse::HTTP_FOUND);
     $response->assertRedirect();
@@ -176,4 +179,27 @@ it('must send message for all contacts by email', function () {
         ->post(route('messages.send', ['message' => $message]));
     $response->assertRedirect();
     Queue::assertPushed(SendMessageJob::class);
+});
+
+it('can have attatched files', function () {
+    Storage::fake(Message::getStorageDisk());
+    $message = Message::factory()->make();
+    $files = [
+        'attaches' => [
+            UploadedFile::fake()->create('file1.txt'),
+            UploadedFile::fake()->create('file2.txt')
+        ]
+    ];
+    $response = $this->actingAs(User::factory()->create())
+        ->post(
+            route('messages.store'),
+            $message->toArray() + $files
+        );
+    $response->assertStatus(HttpResponse::HTTP_FOUND);
+    $response->assertRedirect();
+    Storage::disk(Message::getStorageDisk())->assertExists(now()
+        ->format('YmdHi') . '_' . $files['attaches'][0]->getClientOriginalName());
+    // Storage::disk(Message::getStorageDisk())->assertExists(now()
+    //     ->format('YmdHi') . '_' . $files['attaches'][1]->getClientOriginalName());
+    $this->assertDatabaseHas(Message::class, $message->only(['subject']));
 });

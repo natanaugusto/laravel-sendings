@@ -39,10 +39,13 @@ it('must belongs to a user', function () {
     expect($message->user)->toBeInstanceOf(User::class);
 });
 
-it('must have a file', function () {
+it('must have a files', function () {
     $message = Message::factory()->create();
+    $message->file()->create(File::factory()->make()->toArray());
+    $message->file()->create(File::factory()->make()->toArray());
     $message->file()->create(File::factory()->make()->toArray());
     $message->save();
     $message->refresh();
     expect($message->file)->toBeInstanceOf(File::class);
+    expect($message->files->count())->toBe(3);
 });
