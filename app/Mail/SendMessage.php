@@ -47,9 +47,10 @@ class SendMessage extends Mailable
         return new Content(
             view: 'mail.message',
             with: [
-                'title' => $this->message->title,
-                'name' => $this->contact->name,
-                'body' => $this->message->body
+                'body' => $this->message->body,
+                'data' => [
+                    'name' => $this->contact->name
+                ]
             ]
         );
     }

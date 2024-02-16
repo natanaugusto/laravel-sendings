@@ -1,8 +1,8 @@
 <?php
 
-use App\Jobs\SendMessageJob;
 use App\Models\User;
 use App\Models\Message;
+use App\Jobs\SendMessageJob;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Queue;

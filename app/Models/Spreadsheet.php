@@ -3,15 +3,17 @@
 namespace App\Models;
 
 use App\Enums\IncreaseType;
-use App\Models\Traits\BelongsToUser;
+use App\Traits\Models\Fileable;
+use App\Traits\Models\BelongsToUser;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-class Spreadsheet extends FileableBaseModel
+class Spreadsheet extends Model
 {
-    use HasFactory, BelongsToUser;
+    use HasFactory, BelongsToUser, Fileable;
 
     protected $fillable = ['user_id', 'name'];
 
@@ -34,6 +36,7 @@ class Spreadsheet extends FileableBaseModel
     {
         return 'spreadsheet';
     }
+
     public static function getQueueConnection(): string
     {
         return 'spreadsheet';

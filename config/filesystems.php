@@ -61,6 +61,11 @@ return [
             'root' => storage_path('app/spreadsheet'),
             'throw' => false,
         ],
+        'message' => [
+            'driver' => 'local',
+            'root' => storage_path('app/message'),
+            'throw' => false,
+        ],
 
     ],
 

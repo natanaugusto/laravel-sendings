@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App\Traits\Models;
 
-// use Illuminate\Http\File as UploadedFile;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use App\Models\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-abstract class FileableBaseModel extends Model
+trait Fileable
 {
     protected static $GENERATED_FILENAME;
 
@@ -57,5 +56,4 @@ abstract class FileableBaseModel extends Model
     }
 
     abstract public static function getStorageDisk(): string;
-    abstract public static function getQueueConnection(): string;
 }

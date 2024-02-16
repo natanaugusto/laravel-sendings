@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+use Illuminate\Support\Facades\Blade;
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title }}</title>
-</head>
-
-<body>
-    <p>Dear {{ $name }},</p>
-    {{ $body }}
-</body>
-
-</html>
+echo Blade::render($body, $data);

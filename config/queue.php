@@ -80,6 +80,15 @@ return [
             'after_commit' => false,
         ],
 
+        'message' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'queue' => 'message',
+            'retry_after' => 90,
+            'block_for' => null,
+            'after_commit' => false,
+        ],
+
     ],
 
     /*

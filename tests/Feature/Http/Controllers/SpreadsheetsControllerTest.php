@@ -76,9 +76,7 @@ it('must dispatch an EnqueueSpreadsheetImportJob', function () {
     $export = new ContactsExport($contacts);
     Excel::store($export, $file);
     $exampleFile = storage_path("app/{$file}");
-    Queue::fake([
-        EnqueueSpreadsheetImportJob::class
-    ]);
+    Queue::fake(EnqueueSpreadsheetImportJob::class);
     $response = $this
         ->actingAs($user)
         ->post(route('spreadsheets.store'), [
