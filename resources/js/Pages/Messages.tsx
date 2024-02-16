@@ -1,5 +1,8 @@
+import { useRef } from "react";
 import { Transition } from "@headlessui/react";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 import Modal from "@/Components/Modal";
 import TextInput from "@/Components/TextInput";
@@ -51,6 +54,22 @@ export default function Index({ auth }: PageProps) {
       updated_at: null,
     }
   );
+
+  const editor = useRef<any>(null);
+  const quillModules = {
+    toolbar: [
+      ["bold", "italic", "underline", "strike"], // toggled buttons
+      ["blockquote", "code-block"],
+      ["link", "image"],
+      [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+      [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+      [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+      [{ align: [] }],
+      ["clean"], // remove formatting button
+    ],
+  };
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -199,15 +218,15 @@ export default function Index({ auth }: PageProps) {
             />
             <InputError className="mt-2" message={errors.subject} />
           </div>
-          <div className="flex items-center">
+          <div className="flex min-h-80">
             <InputLabel htmlFor="body" value="Body" />
-            <TextInput
-              id="body"
-              name="body"
-              value={data.body ?? ""}
-              className="m-2 block w-full"
-              onChange={(e) => setData("body", e.target.value)}
-              required
+            <ReactQuill
+              ref={editor}
+              theme="snow"
+              value={data.body}
+              modules={{ ...quillModules }}
+              onChange={(content) => setData("body", content)}
+              className="m-2 mb-16 block w-full min-h-fit"
             />
             <InputError className="mt-2" message={errors.body} />
           </div>
