@@ -6,8 +6,16 @@ use App\Models\Contact;
 use App\Models\Spreadsheet;
 use App\Enums\IncreaseType;
 use App\Exports\ContactsExport;
+use App\Models\Contracts\FileableInterface;
+use App\Models\Contracts\QueuelableInterface;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+
+it('must implement App\Models\{Fileable, Queuelable} and interfaces', function () {
+    $implementedInterface = class_implements(Spreadsheet::class);
+    expect($implementedInterface)->toContain(FileableInterface::class);
+    expect($implementedInterface)->toContain(QueuelableInterface::class);
+});
 
 it('must create a spreadsheet', function () {
     $data = [

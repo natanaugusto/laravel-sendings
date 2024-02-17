@@ -5,13 +5,15 @@ namespace App\Models;
 use App\Enums\IncreaseType;
 use App\Models\Traits\Fileable;
 use App\Models\Traits\BelongsToUser;
+use App\Models\Contracts\FileableInterface;
+use App\Models\Contracts\QueuelableInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-class Spreadsheet extends Model
+class Spreadsheet extends Model implements FileableInterface, QueuelableInterface
 {
     use HasFactory, BelongsToUser, Fileable;
 

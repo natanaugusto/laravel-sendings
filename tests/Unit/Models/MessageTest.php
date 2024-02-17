@@ -1,8 +1,16 @@
 <?php
 
+use App\Models\User;
 use App\Models\File;
 use App\Models\Message;
-use App\Models\User;
+use App\Models\Contracts\FileableInterface;
+use App\Models\Contracts\QueuelableInterface;
+
+it('must implement App\Models\{Fileable, Queuelable} and interfaces', function () {
+    $implementedInterface = class_implements(Message::class);
+    expect($implementedInterface)->toContain(FileableInterface::class);
+    expect($implementedInterface)->toContain(QueuelableInterface::class);
+});
 
 it('must create a message', function () {
     $data = [
