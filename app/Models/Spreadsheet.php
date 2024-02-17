@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Enums\IncreaseType;
-use App\Traits\Models\Fileable;
-use App\Traits\Models\BelongsToUser;
+use App\Models\Traits\Fileable;
+use App\Models\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Relations\HasMany;

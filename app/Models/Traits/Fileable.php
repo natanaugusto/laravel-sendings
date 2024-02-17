@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits\Models;
+namespace App\Models\Traits;
 
 use App\Models\File;
 use Illuminate\Http\UploadedFile;

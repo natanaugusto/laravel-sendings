@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Traits\Models\Fileable;
-use App\Traits\Models\BelongsToUser;
+use App\Models\Traits\Fileable;
+use App\Models\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
