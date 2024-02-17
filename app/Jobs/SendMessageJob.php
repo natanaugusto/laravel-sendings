@@ -39,7 +39,9 @@ class SendMessageJob implements ShouldQueue
             )->get();
         foreach ($contacts as $contact) {
             $this->offset++;
-            Mail::to($contact->email)->queue(new SendMessage($this->user, $this->message, $contact));
+            Mail::to($contact->email)
+                ->queue(new SendMessage($this->user, $this->message, $contact))
+                ->onQueue(Message::getQueueConnection());
         }
         self::dispatch($this->user, $this->message, $this->offset);
     }

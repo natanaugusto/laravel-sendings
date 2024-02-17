@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Message;
+use App\Jobs\SendMessageJob;
 use App\Http\Requests\MessageRequest;
 use App\Http\Requests\MessageStoreRequest;
-use App\Jobs\SendMessageJob;
-use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Contracts\Pagination\Paginator;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
@@ -82,7 +81,8 @@ class MessagesController extends Controller
 
     public function send(MessageRequest $request, Message $message): RedirectResponse
     {
-        SendMessageJob::dispatch($request->user(), $message);
+        SendMessageJob::dispatch($request->user(), $message)
+            ->onQueue(Message::getQueueConnection());
         return Redirect::back();
     }
 
