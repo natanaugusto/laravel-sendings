@@ -27,13 +27,6 @@ cd laravel-sendings
 ```bash
 cp .env.example .env
 echo "\nWWWUSER=1000\nWWWGROUP=1000" >> .env
-sed -i 's/^DB_CONNECTION=mysql/DB_CONNECTION=pgsql/' .env
-sed -i 's/^DB_HOST=127.0.0.1/DB_HOST=pgsql/' .env
-sed -i 's/^DB_PORT=3306/DB_PORT=5432/' .env
-sed -i 's/^DB_DATABASE=laravel/DB_DATABASE=laravel/' .env
-sed -i 's/^DB_PASSWORD=/DB_PASSWORD=secret/' .env
-sed -i 's/^QUEUE_CONNECTION=sync/QUEUE_CONNECTION=redis/' .env
-sed -i 's/^REDIS_HOST=127\.0\.0\.1/REDIS_HOST=redis/' .env
 
 docker-compose up -d
 docker exec -it --user sail laravel-sendings_laravel.test_1 composer install --verbose
@@ -62,6 +55,6 @@ Visit http://localhost in your browser to access the application.
 = true
 > exit
 
-mkdir -p  storage/app/testing/sheets && mv storage/app/sheets/example.xlsx storage/app/testing/sheets/example.xlsx
+# Running pest
 ./vendor/bin/sail pest # For test the backend application
 ```
