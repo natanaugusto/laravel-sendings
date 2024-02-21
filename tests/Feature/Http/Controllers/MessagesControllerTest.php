@@ -173,12 +173,12 @@ it('must fails on validate the message store and update validations', function (
 
 it('must send message for all contacts by email', function () {
     $message = Message::factory()->create()->refresh();
-    Queue::fake();
+    Queue::fake(SendMessageJob::class);
     $response = $this
         ->actingAs($message->user)
         ->post(route('messages.send', ['message' => $message]));
     $response->assertRedirect();
-    Queue::assertPushed(SendMessageJob::class);
+    Queue::assertPushedOn(Message::getQueueConnection(), SendMessageJob::class);
 });
 
 it('can have attatched files', function () {
