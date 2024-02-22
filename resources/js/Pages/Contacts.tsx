@@ -73,12 +73,12 @@ export default function Index({ auth }: PageProps) {
       <Head title="Contacts" />
       <div className="sm:py-4 sm:p-4 lg:py-8 lg:p-8 ">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div className="mx-auto sm:py-3 lg:py-4">
+          <div className="relative mx-auto sm:py-4 lg:py-6">
             <PrimaryButton
               onClick={() =>
-                router.visit(route("contacts.create", [{}, queryParams]))
+                router.visit(route("messages.create", [{}, queryParams]))
               }
-              className="bg-green-500 hover:bg-green-700 focus:bg-green-700 active:bg-green-900"
+              className="absolute right-2 top-0 bg-green-500 hover:bg-green-700 focus:bg-green-700 active:bg-green-900"
             >
               Create
             </PrimaryButton>

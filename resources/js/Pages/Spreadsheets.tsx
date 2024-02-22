@@ -40,7 +40,7 @@ export default function Index({ auth }: PageProps) {
       <div className="sm:py-4 sm:pb-2 lg:py-8 lg:pb-4">
         <div className="max-w-7xl mx-auto sm:px-4 lg:px-6 space-y-6">
           <div className="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-            <section className={"max-w-xl"}>
+            <section className="max-w-xl">
               <header>
                 <h2 className="text-lg font-medium text-gray-900">
                   Spreadsheet upload
