@@ -35,6 +35,7 @@ trait Fileable
             'path' => Storage::disk(static::getStorageDisk())->path($fileName),
             'size' => Storage::disk(static::getStorageDisk())->size($fileName),
         ]);
+        $this->afterStore($fileName);
         return $fileName;
     }
 
@@ -53,6 +54,10 @@ trait Fileable
             self::$GENERATED_FILENAME = now()->format('YmdHi') . "_{$file->getClientOriginalName()}";
         }
         return self::$GENERATED_FILENAME;
+    }
+
+    public function afterStore(string $filename): void
+    {
     }
 
     abstract public static function getStorageDisk(): string;

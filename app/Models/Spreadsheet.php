@@ -44,17 +44,17 @@ class Spreadsheet extends Model implements FileableInterface, QueuelableInterfac
         return 'spreadsheet';
     }
 
+    public function afterStore(string $filename): void
+    {
+        $path = Storage::disk(static::getStorageDisk())->path($filename);
+        $this->rows = file_exists($path) ?
+            IOFactory::load($path)->getActiveSheet()->getHighestRow() : 0;
+        $this->save();
+    }
+
     protected static function boot(): void
     {
         parent::boot();
-        static::created(fn ($model) => self::fillRowsFromSpreadsheet($model));
-    }
-
-    protected static function fillRowsFromSpreadsheet(self $model): void
-    {
-        $path = Storage::disk(static::getStorageDisk())->path($model->name);
-        $model->rows = file_exists($path) ?
-            IOFactory::load($path)->getActiveSheet()->getHighestRow() : 0;
-        $model->save();
+        static::created(fn ($model) => $model->afterStore($model->name));
     }
 }

@@ -8,6 +8,7 @@ use App\Enums\IncreaseType;
 use App\Exports\ContactsExport;
 use App\Models\Contracts\FileableInterface;
 use App\Models\Contracts\QueuelableInterface;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -89,4 +90,25 @@ it('must fill the attribute rows with the total of file rows', function () {
     $sheet->refresh();
     expect($sheet->rows)->toBe($count);
     unlink(Storage::disk(Spreadsheet::getStorageDisk())->path($file));
+});
+
+
+it('must upload a file', function () {
+    $count = 10;
+    $file = 'example.xlsx';
+    $export = new ContactsExport(Contact::factory($count)->make());
+    Excel::store($export, $file);
+    $exampleFile = storage_path("app/{$file}");
+    Storage::fake(Spreadsheet::getStorageDisk());
+    $file = UploadedFile::fake()
+        ->createWithContent($file, file_get_contents($exampleFile));
+    $spreadsheet = Spreadsheet::create([
+        'user_id' => User::factory()->create()->id,
+        'name' => Spreadsheet::generateFilename($file),
+    ]);
+    $spreadsheet->storeFile($file);
+    $spreadsheet->save();
+    $spreadsheet->refresh();
+    Storage::disk(Spreadsheet::getStorageDisk())->assertExists($spreadsheet->name);
+    expect($spreadsheet->rows)->toBe($count);
 });
